@@ -15,10 +15,10 @@ ui-motion-showcase/
     └── remotion-motion-guardrails.md
 ```
 
-- **`SKILL.md`** — Otak produksi utama berisi **7-Stage Gated Pipeline** (Audit Design Tokens → Storyboard 4 Babak → Gate ACC → Build Modular Remotion → Visual Self-Check → Audio-Visual Lock → Final Render 60fps).
-- **`references/motion-bible.md`** — Aturan *anti-AI slop*, kurva easing & fisika `spring()` 60fps, kamera *flowing spline*, protokol kursor manusiawi (*Bezier + hover pause + tactile click*), resep visual studio, dan pola *money shots* untuk SaaS/Fintech.
-- **`references/audio-sfx.md`** — Protokol *Audio-Visual Lock*, pemetaan `SFX_CUES`, serta panduan generator efek suara `.wav` prosedural murni Node.js.
-- **`references/remotion-motion-guardrails.md`** — Aturan determinisme 60fps dan checklist anti-bug Remotion (disalin ke `.agents/rules/` saat membuat proyek Remotion baru).
+- **`SKILL.md`** — Otak produksi utama berisi **7-Stage Gated Pipeline** (Audit Design Tokens → Storyboard 4 Babak + *Mandatory Frame Budget* → Gate ACC → Build Modular Remotion → Visual Self-Check + cek *safe-area* & *zero-snap* → Audio-Visual Lock → Final Render 60fps).
+- **`references/motion-bible.md`** — Aturan *anti-AI slop*, kurva easing & fisika `spring()` 60fps, pacing *zero dead-air*, *zero-snap continuity*, *polarity-aware palette rotation*, *center-first layout shift*, *safe-area* `≥ 80px`, protokol kursor manusiawi, dan pola *Hero Shots* universal untuk semua jenis produk UI.
+- **`references/audio-sfx.md`** — Protokol *Audio-Visual Lock*, pemetaan `SFX_CUES`, aturan *cooldown* SFX minimal 10 frame (*anti-stacking*), serta panduan generator efek suara `.wav` prosedural murni Node.js.
+- **`references/remotion-motion-guardrails.md`** — Guardrails v1.1 (Universal, 13 aturan) untuk determinisme 60fps, *zero dead-air*, *zero-snap*, *safe-area*, dan checklist anti-bug Remotion (disalin ke `.agents/rules/` saat membuat proyek Remotion baru).
 
 ## Cara Memasang
 

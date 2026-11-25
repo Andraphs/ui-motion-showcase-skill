@@ -8,7 +8,7 @@ description: Creative Director & Technical Engine untuk membuat Hybrid Product L
 Kamu bertindak sebagai **Creative Director + Senior Motion Engineer**. Tugasmu adalah mengubah kode UI React/Tailwind asli menjadi video **Hybrid Product Launch Film** (gabungan *brand film* editorial + *UI showcase* produk) yang terasa mahal, tajam, dan sinkron secara audio-visual di **Remotion (60 fps)**.
 
 Sebelum menulis satu baris kode animasi pun, WAJIB baca tiga file referensi di folder skill ini:
-1. `references/motion-bible.md` — Aturan anti-AI slop, fisika easing, kamera *flowing spline*, kursor manusiawi, resep visual (*editorial grid, blueprint callout, liquid glass, pixel/halftone*), dan pola adegan SaaS/Fintech.
+1. `references/motion-bible.md` — Aturan anti-AI slop, fisika easing, pacing *zero dead-air*, kamera *flowing spline*, *zero-snap continuity*, *polarity-aware palette rotation*, kursor manusiawi, *center-first layout*, *safe-area*, resep visual, dan pola *Hero Shots* universal.
 2. `references/audio-sfx.md` — Protokol *Audio-Visual Lock*, pemetaan `SFX_CUES`, dan skrip generator audio prosedural `.wav`.
 3. `references/remotion-motion-guardrails.md` — Guardrails determinisme 60fps & checklist anti-bug Remotion (salin file ini ke `.agents/rules/` saat proyek Remotion baru dibuat).
 
@@ -26,17 +26,22 @@ DILARANG melompat langsung ke penulisan kode video sebelum melewati Gate persetu
   - DILARANG memakai CSS `transition`, CSS `@keyframes`, `:hover`, `setTimeout`, atau `requestAnimationFrame` (menyebabkan *flicker* dan *desync* di Remotion).
   - Pilih hanya **3–4 Hero Components** paling menjual, lalu bangun ulang versi *motion-ready* di dalam Remotion di mana setiap state dan perubahan dikontrol murni oleh `useCurrentFrame()`, `interpolate()`, dan `spring()`.
 
-### Tahap 2: Brief & Storyboard 4 Babak (Default 30 Detik @ 60fps = 1800 Frames)
-Susun tabel Storyboard terperinci sebelum coding dengan arsitektur **Hybrid Product Launch Film**:
+### Tahap 2: Brief, Storyboard 4 Babak & Mandatory Frame Budget (Revisi #9)
+Susun Storyboard terperinci sebelum coding dengan arsitektur **Hybrid Product Launch Film** (default 30 detik @ 60fps = `1800` frame, atau sesuai durasi brief).
 
-| Babak | Waktu (Frame @60fps) | Peran & Estetika |
-|---|---|---|
-| **Act 1: Brand Hook & Logo Reveal** | `0:00–0:04` (`0–240`) | Editorial grid 1px, geometric logo reveal dengan *directional motion blur*, dan *kinetic typography* pemicu masalah (hook wajib kuat di 1,5 detik pertama). |
-| **Act 2: Motivated Transition** | `0:04–0:06` (`240–360`) | Jembatan mulus ke produk: kotak grid atau tombol CTA diklik kursor / *zoom-in* bertransformasi langsung menjadi *container* dashboard. Dilarang *hard cut* atau *crossfade* polos. |
-| **Act 3: Hero UI Showcase (3 Fitur)** | `0:06–0:24` (`360–1440`) | **Isolasi Fokus:** Maksimal 1 *hero component* per 2–3 detik. Terapkan kamera *close-up*, *depth parallax*, *chain reaction* antar komponen, dan minimal 1 sentuhan estetika *brand film* di dalam UI (misal grafik *dot-matrix/halftone* atau *blueprint dimension callouts*). |
-| **Act 4: Kinetic Outro & Lockup** | `0:24–0:30` (`1440–1800`) | *Zoom-out* cepat dengan *motion blur*, *kinetic typography* CTA penutup, logo lockup bersih, dan ketukan audio final. |
+**ATURAN WAJIB (Strict Frame Budget Allocation):**
+Sebelum menulis satu baris kode pun, agen WAJIB menyusun **Tabel Alokasi Durasi Frame** yang totalnya presisi 100% dengan durasi video, mencakup batas *cursor entry* (maks `15–30` frame pasca-transisi) dan batas *hold* pasca-aksi (maks `20–30` frame):
 
-Sertakan juga daftar rencana `SFX_CUES` (perkiraan frame & jenis suara) di akhir storyboard.
+| Scene / Babak | Range Frame | Durasi (f) | Polaritas BG | Cursor Entry | Hold Budget | Hand-off Transform (Akhir → Awal Berikutnya) |
+|---|---:|---:|---|---:|---:|---|
+| **Act 1: Brand Hook & Logo** | `0–240` | `240` | Base Spectrum | — | `24f` | `scale: 1.0 → 1.08` (zoom ke CTA/grid) |
+| **Act 2: Motivated Transition** | `240–360` | `120` | Tint Shift 1 | `f+18` | `20f` | `scale: 1.08 → 1.0`, `rotX: 6° → 0°` |
+| **Act 3A: Hero Feature 1** | `360–720` | `360` | Base Spectrum | `f+20` | `25f` | `scale: 1.02 → 1.02`, `x: -140px → 0` |
+| **Act 3B: Hero Feature 2** | `720–1080` | `360` | Tint Shift 2 | `f+18` | `25f` | `scale: 1.04 → 1.04`, `rotY: -4° → 0°` |
+| **Act 3C: Hero Feature 3** | `1080–1440` | `360` | Base Spectrum | `f+20` | `24f` | `scale: 1.05 → 1.05`, `rotX: 0° → 5°` |
+| **Act 4: Kinetic Outro & Lockup** | `1440–1800` | `360` | Deep/Clean Base | — | `30f` | Final settle (`scale: 1.0`) |
+
+Sertakan daftar rencana `SFX_CUES` di bawah tabel (wajib mematuhi jeda cooldown minimal `10` frame antar tipe SFX serupa).
 
 ### Tahap 3: GATE 1 — User ACC
 - Tampilkan rangkuman Design Tokens yang diekstrak + Tabel Storyboard + daftar komponen yang akan diekstrak.
@@ -46,6 +51,7 @@ Sertakan juga daftar rencana `SFX_CUES` (perkiraan frame & jenis suara) di akhir
 Bangun struktur proyek yang rapi:
 - `src/motion/tokens.ts` — Design tokens hasil ekstraksi dari repo React asli + konstanta `FPS = 60`.
 - `src/motion/physics.ts` — Preset kurva easing terkunci, fungsi *flowing spline camera*, dan helper jalur kursor Bezier.
+- `src/motion/handoff.ts` — Konstanta *End-to-Start Transform Lock* antar adegan agar bebas *visual snap*.
 - `src/components/ui/` — Komponen UI *motion-ready* (kartu, grafik SVG, odometer angka, kursor, badge *liquid glass*).
 - `src/components/fx/` — Layer finishing (*film grain 2–3%*, *editorial hairline grid*, *blueprint callout*, *dot-matrix canvas/SVG*, `<CameraMotionBlur>`).
 - `src/scenes/` — Komposisi tiap babak (`Act1Hook.tsx`, `Act2Transition.tsx`, `Act3Features.tsx`, `Act4Outro.tsx`).
@@ -59,6 +65,9 @@ Mengadopsi protokol `render_frames` / *cek still*: **DILARANG merender MP4 final
    - Apakah ada teks terpotong, bertabrakan, atau terlalu kecil di *safe area*?
    - Apakah kontras & hierarki visual terbaca dalam < 1 detik?
    - Apakah sudut kamera dan *crop* fokus ke 1 komponen pahlawan?
+   - **Cek Safe-Area (`≥ 80px`):** Pastikan tidak ada HUD, *blueprint callout*, *kinetic headline*, atau komponen UI yang menyentuh zona `80px` teratas atau terbawah kanvas.
+   - **Cek Zero-Snap Continuity:** Render 2 frame bersebelahan di batas pergantian adegan (misal `frame 239` & `240`, `frame 359` & `360`) untuk memastikan tidak ada lompatan skala, rotasi, atau posisi (*visual snap*).
+   - **Cek Center-First & No Overlap:** Pastikan *Hero Module* mulai dari posisi tengah dan tidak menabrak *External Kinetic Headline* maupun *Reactive Glass Card* saat bergeser.
 4. Perbaiki bug visual terlebih dahulu sebelum masuk ke Tahap 6.
 
 ### Tahap 6: Audio-Visual Lock (Procedural SFX + Music Bed)

@@ -21,7 +21,15 @@
   - `CAMERA_GLIDE` (pan/zoom kamera): `{ damping: 32, stiffness: 95, mass: 1.2 }`.
 
 ### Ritme & Pacing (Contrast Principle)
-- **Aksi cepat (14–22 frame / 0.23–0.36 detik)** → diikuti **Hold/Breathing Room (48–72 frame / 0.8–1.2 detik)** agar mata penonton sempat mencerna angka/pesan sebelum kamera bergerak lagi.
+- **Aksi cepat (14–22 frame / 0.23–0.36 detik)** → diikuti **Hold/Breathing Room ketat (maks 20–30 frame / 0.33–0.50 detik)** dengan *continuous camera drift* 1–2% agar mata penonton sempat mencerna angka/pesan tanpa terasa berhenti (*dead-air*).
+
+---
+
+## 2B. Zero Dead-Air, Pacing Ketat & Cursor Latency (Revisi #1 & #2)
+
+- **Zero Dead-Air Rule:** Batasi waktu jeda (*hold*) pasca-aksi maksimal **20–30 frame** (`0.33–0.50` detik pada 60fps). Dilarang membiarkan layar diam statis melebihi 30 frame.
+- **Continuous Subtle Camera Drift:** Bahkan saat momen *hold* (20–30 frame), kamera WAJIB tetap memiliki *drift* halus sebesar **1–2%** (`scale` atau *pan* mikro terus berjalan) agar video selalu terasa hidup dan tidak pernah mengalami *dead-air*.
+- **Zero-Latency Cursor Entry:** Pada setiap adegan yang melibatkan interaksi, kursor WAJIB mulai masuk ke kanvas maksimal **15–30 frame** setelah transisi pembuka adegan selesai. Jangan biarkan penonton menunggu kursor muncul di layar yang kosong.
 
 ---
 
@@ -35,6 +43,20 @@ Perlakukan UI seperti objek fisik di dalam studio, bukan rekaman layar datar:
   2. `Hero UI Layer` (dashboard / kartu utama): bergerak **1.0x**.
   3. `Floating Callouts / Cursor / Toast`: bergerak **1.15x–1.25x** dengan bayangan lebih lembut dan jauh.
 - **True Optical Motion Blur:** Bungkus adegan transisi cepat dan *kinetic typography* dengan `<CameraMotionBlur shutterAngle={180} samples={8}>` (dari `@remotion/motion-blur`).
+
+---
+
+## 3B. Zero-Snap Scene Continuity & Polarity-Aware Palette Rotation (Revisi #3 & #5)
+
+### End-to-Start Transform Lock (Anti-Snap)
+Setiap perpindahan dari Scene A ke Scene B WAJIB mensinkronkan nilai akhir transformasi Scene A dengan nilai awal Scene B:
+- Kunci nilai `scale`, `translateX`, `translateY`, dan `rotateX/Y/Z` pada frame terakhir Scene A agar **identik atau berlanjut dalam satu kurva kecepatan** di frame pertama Scene B.
+- Simpan nilai transisi bersama di konstanta terpusat (`src/motion/handoff.ts`) agar perubahan di satu adegan tidak menimbulkan lompatan (*snap*) di adegan berikutnya.
+
+### Polarity-Aware Palette Rotation (Universal Dark & Light Mode)
+Untuk menjaga variasi visual antar adegan tanpa merusak identitas produk, terapkan rotasi latar belakang berbasis polaritas *design tokens* produk yang sedang dikerjakan:
+- **Jika produk bertema Dark Mode (*Dark-Spectrum Palette Rotation*):** Rotasikan latar belakang secara halus antar spektrum gelap—misalnya `Deep Base Dark` → `Dark Surface ber-tint 6–12% warna aksen produk` → `Deep Charcoal/Obsidian`. Dilarang melompat ke latar putih terang secara acak.
+- **Jika produk bertema Light Mode (*Light-Spectrum Palette Rotation*):** Rotasikan latar belakang secara halus antar spektrum terang—misalnya `Warm Off-White / Pure Canvas` → `Soft Surface ber-tint 4–8% warna aksen produk` → `Clean Neutral`. Dilarang membalik ke latar hitam pekat kecuali untuk *Act 1/4* yang memang dimotivasi brand identity.
 
 ---
 
@@ -60,13 +82,27 @@ Kursor AI yang bergerak lurus kaku langsung merusak ilusi video studio. Wajib te
 
 ---
 
-## 6. Pola "Money Shots" Khusus SaaS & Money Management
+## 5B. Layout Architecture, Kinetic Headline + Glass Cards & Safe-Area (Revisi #4, #7 & #8)
 
-Gunakan pola berikut untuk Act 3 saat menyorot dashboard keuangan:
-1. **Odometer / Number Roll:** Angka saldo utama atau *net worth* wajib beranimasi naik dari nilai awal ke nilai target memakai kurva *Expo Out* dengan `font-variant-numeric: tabular-nums` (agar lebar digit tidak bergetar).
-2. **Progressive Cashflow Chart:** Gambar garis kurva SVG memakai `strokeDashoffset` dari penuh ke `0`, atau naikkan batang *bar chart* secara *staggered* (selisih 3 frame per batang), lalu kursor mampir ke puncak grafik untuk memunculkan *floating tooltip*.
-3. **Financial Chain Reaction:** Tunjukkan kekuatan aplikasi dalam satu rantai aksi nyata:
-   - Kursor klik tombol `+ Add Expense` (`frame X`, SFX: `click`)
-   - Kartu transaksi baru meluncur masuk di daftar (`frame X+6`, SFX: `pop`)
-   - *Progress bar* kategori budget langsung terisi mulus (`frame X+10`, SFX: `whoosh_soft`)
-   - Angka *Total Balance* di kartu atas ikut terkalkulasi turun secara *odometer* (`frame X+12`, SFX: `tick_settle`)
+### Center-First Layout Shift
+- Setiap *Hero Module* (kartu utama, panel fitur, atau jendela UI) WAJIB masuk dan terkunci **di tengah kanvas (*center-aligned*) terlebih dahulu** sebagai titik fokus utama.
+- Saat elemen sekunder muncul (*pop-out* notifikasi, panel detail, atau kartu *insight*), geser *Hero Module* secara halus (*layout shift* dengan `SNAPPY_UI` spring) ke kiri atau kanan untuk memberi ruang—bukan langsung ditaruh berat sebelah sejak frame pertama.
+
+### External Kinetic Headline + Reactive Glass Insight Cards
+Di setiap fitur pada Act 3, kombinasikan dua elemen naratif ini di luar bingkai UI utama:
+1. **External Kinetic Headline:** Judul fitur singkat (2–5 kata tajam, tanpa jargon klise AI) yang diposisikan di luar modul UI dan masuk dengan *masked rise* (`clip-path` + `translateY`).
+2. **Reactive Glass Insight Card:** Kartu bergaya *frosted/liquid glass* (border `1px` dengan *top specular rim*) yang muncul setelah *Center-First Layout Shift* dan **bereaksi langsung** terhadap aksi UI (misalnya status berubah, metrik terhitung ulang, atau badge konfirmasi menyala 2–4 frame setelah klik).
+
+### HUD & UI Safe-Area Margin (`≥ 80px`)
+- Tetapkan zona aman (*safe-area*) wajib minimal **`80px` dari tepi atas** dan **`80px` dari tepi bawah** kanvas (pada resolusi `1920x1080` maupun `1080x1920`).
+- Seluruh HUD, label *blueprint callout* (`FIG. 01`, dimensi piksel), *External Kinetic Headline*, dan batas luar *Hero Module* DILARANG masuk ke dalam zona `80px` atas/bawah agar bebas tabrakan visual dan tidak terpotong pemutar video.
+- *(Khusus rasio vertikal 9:16 untuk TikTok/Reels/Shorts: perbesar margin bawah menjadi `≥ 180px` dan atas `≥ 120px` untuk menghindari overlay tombol platform).*
+
+---
+
+## 6. Pola "Hero Shots" Universal (Untuk Semua Jenis Produk UI)
+
+Sesuaikan pola interaksi di Act 3 dengan domain produk yang diaudit dari repo React/desain:
+1. **Live Data & Metric Roll:** Angka utama (saldo, konversi, kecepatan, analitik, skor) beranimasi naik/turun menggunakan kurva *Expo Out* dengan `fontVariantNumeric: 'tabular-nums'`.
+2. **Progressive Visualization:** Grafik garis/area (`strokeDashoffset`), *bar chart* berurutan (*stagger 3 frame*), atau *dot-matrix/halftone* tergambar otomatis lalu memunculkan *tooltip* saat disentuh kursor.
+3. **Interactive Chain Reaction:** Satu aksi kursor (klik tombol, toggle, input perintah, atau pilih filter) memicu reaksi berantai dalam 3–12 frame: aksi klik (`click`) → *Center-First Layout Shift* → *Reactive Glass Insight Card* / notifikasi masuk (`pop`) → komponen data utama diperbarui (`whoosh_soft` / `tick`).

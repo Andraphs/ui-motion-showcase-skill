@@ -28,6 +28,13 @@ export const SFX_CUES: SfxCue[] = [
 ];
 ```
 
+## 2B. Aturan Cooldown & Anti-Stacking SFX (Revisi #6)
+
+Untuk mencegah suara ganda (*double-trigger*), *audio phasing*, atau bunyi menumpuk yang terasa berisik:
+1. **Jeda Cooldown Minimal 10 Frame:** Dua cue dengan `type` SFX yang sama—atau dalam grup frekuensi serupa (`whoosh` & `whoosh_soft`, atau `click` & `tick`)—WAJIB berjarak minimal **10 frame** (`~167ms` pada 60fps).
+2. **Prioritas Aksi Utama:** Jika dua animasi terjadi dalam rentang `< 10` frame (misal kartu bergeser bersamaan dengan klik tombol), bunyikan **hanya 1 SFX terpenting** (aksi pemicu utamanya), atau geser aksi sekunder minimal `+10` frame.
+3. **Validasi Otomatis di `src/audio/cues.ts`:** Sertakan fungsi validator ringan (atau cek manual sebelum render) yang memverifikasi tidak ada dua `SfxCue` bertipe sama dengan selisih `Math.abs(a.frame - b.frame) < 10`.
+
 ## 3. Generator SFX Prosedural Murni Node.js (`scripts/generate-sfx.mjs`)
 Jika workspace belum memiliki `sfx.py` dari Motion-By-Labs, buat dan jalankan skrip Node.js mandiri ini (`node scripts/generate-sfx.mjs`) untuk men-generate paket lengkap `.wav` (44.1kHz, 16-bit PCM) ke `public/sfx/` tanpa dependency tambahan:
 
