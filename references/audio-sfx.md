@@ -28,12 +28,12 @@ export const SFX_CUES: SfxCue[] = [
 ];
 ```
 
-## 2B. Aturan Cooldown & Anti-Stacking SFX (Revisi #6)
+## 2B. Audio Deduplication Lock (Anti-Double SFX — Core Rule #6)
 
-Untuk mencegah suara ganda (*double-trigger*), *audio phasing*, atau bunyi menumpuk yang terasa berisik:
-1. **Jeda Cooldown Minimal 10 Frame:** Dua cue dengan `type` SFX yang sama—atau dalam grup frekuensi serupa (`whoosh` & `whoosh_soft`, atau `click` & `tick`)—WAJIB berjarak minimal **10 frame** (`~167ms` pada 60fps).
-2. **Prioritas Aksi Utama:** Jika dua animasi terjadi dalam rentang `< 10` frame (misal kartu bergeser bersamaan dengan klik tombol), bunyikan **hanya 1 SFX terpenting** (aksi pemicu utamanya), atau geser aksi sekunder minimal `+10` frame.
-3. **Validasi Otomatis di `src/audio/cues.ts`:** Sertakan fungsi validator ringan (atau cek manual sebelum render) yang memverifikasi tidak ada dua `SfxCue` bertipe sama dengan selisih `Math.abs(a.frame - b.frame) < 10`.
+Efek suara (*whoosh*, *click*, *pop*) tidak boleh bertumpuk ganda pada satu ketukan visual yang sama:
+1. **Dilarang `<Audio />` di Dalam Loop / Komponen Berulang:** Dilarang keras memasang pemicu `<Audio />` di dalam komponen anak yang di-render berulang (`.map()` / *loop*), seperti animasi teks *per-word* atau *per-line*.
+2. **Pemicu Terpusat + Cooldown Minimal 10 Frame:** Seluruh SFX wajib dipicu secara terpusat di level *master timeline/beat* (`src/audio/cues.ts`) dengan jarak minimal **10 frame** (`~167ms` pada 60fps) antar-efek suara sejenis atau dalam grup frekuensi serupa (`whoosh` & `whoosh_soft`, atau `click` & `tick`).
+3. **Prioritas Aksi Utama & Validasi:** Jika dua animasi terjadi dalam rentang `< 10` frame, bunyikan **hanya 1 SFX terpenting** (aksi pemicu utamanya) atau geser aksi sekunder minimal `+10` frame. Sertakan validator ringan pada `src/audio/cues.ts` untuk memastikan tidak ada dua `SfxCue` sejenis dengan `Math.abs(a.frame - b.frame) < 10`.
 
 ## 3. Generator SFX Prosedural Murni Node.js (`scripts/generate-sfx.mjs`)
 Jika workspace belum memiliki `sfx.py` dari Motion-By-Labs, buat dan jalankan skrip Node.js mandiri ini (`node scripts/generate-sfx.mjs`) untuk men-generate paket lengkap `.wav` (44.1kHz, 16-bit PCM) ke `public/sfx/` tanpa dependency tambahan:

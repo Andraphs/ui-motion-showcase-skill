@@ -15,10 +15,10 @@ ui-motion-showcase/
     └── remotion-motion-guardrails.md
 ```
 
-- **`SKILL.md`** — Otak produksi utama berisi **7-Stage Gated Pipeline** (Audit Design Tokens → Storyboard 4 Babak + *Mandatory Frame Budget* → Gate ACC → Build Modular Remotion → Visual Self-Check + cek *safe-area* & *zero-snap* → Audio-Visual Lock → Final Render 60fps).
-- **`references/motion-bible.md`** — Aturan *anti-AI slop*, kurva easing & fisika `spring()` 60fps, pacing *zero dead-air*, *zero-snap continuity*, *polarity-aware palette rotation*, *center-first layout shift*, *safe-area* `≥ 80px`, protokol kursor manusiawi, dan pola *Hero Shots* universal untuk semua jenis produk UI.
-- **`references/audio-sfx.md`** — Protokol *Audio-Visual Lock*, pemetaan `SFX_CUES`, aturan *cooldown* SFX minimal 10 frame (*anti-stacking*), serta panduan generator efek suara `.wav` prosedural murni Node.js.
-- **`references/remotion-motion-guardrails.md`** — Guardrails v1.1 (Universal, 13 aturan) untuk determinisme 60fps, *zero dead-air*, *zero-snap*, *safe-area*, dan checklist anti-bug Remotion (disalin ke `.agents/rules/` saat membuat proyek Remotion baru).
+- **`SKILL.md`** — Otak produksi utama berisi **7-Stage Gated Pipeline** dan **Strict Frame-Budget Lock** (*Beat Sheet Storyboard* pas 100%, audit *safe-area* `70–90 px`, *mathematical hand-off*, hingga render 60fps).
+- **`references/motion-bible.md`** — Panduan *anti-AI slop* dan **9 Core Production Rules** (*brand-agnostic*, Dark & Light Mode): *zero dead-air* + *secondary micro-interaction* (`> 90f`), *zero-latency cursor* (`15–30f`), *theme-locked color rotation*, *action-driven center-first layout shift*, *mathematical hand-off*, *kinetic headline + reactive glass card*, *safe-area* `70–90 px` + *gap* `24–32 px`, dan pola *Hero Shots* universal.
+- **`references/audio-sfx.md`** — Protokol *Audio-Visual Lock*, **Audio Deduplication Lock** (larangan `<Audio />` di dalam loop + *master timeline* cooldown `≥ 10f`), serta panduan generator efek suara `.wav` prosedural murni Node.js.
+- **`references/remotion-motion-guardrails.md`** — Guardrails **v1.2 (Universal 9 Core Production Rules)** untuk determinisme 60fps dan checklist anti-bug Remotion (disalin ke `.agents/rules/` saat membuat proyek Remotion baru).
 
 ## Cara Memasang
 
