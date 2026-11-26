@@ -1,80 +1,67 @@
 ---
 name: ui-motion-showcase
-description: Creative Director & Technical Engine untuk membuat Hybrid Product Launch Film & UI Motion Showcase 60fps di Remotion dari kode React/Tailwind asli, menggabungkan estetika brand film editorial, fisika gerak studio, visual self-check, dan procedural sound design.
+description: Membuat video UI motion showcase 60fps berstandar studio di Remotion (React + TypeScript + Tailwind) dari kode aplikasi web/SaaS yang sudah ada. Menggabungkan Voice-First pacing, 2.5D camera choreography, kinetic typography, rotasi warna latar adaptif, dan event-synced SFX tanpa memerlukan 3D/Blender. Selalu mewajibkan persetujuan Storyboard (Beat Sheet) sebelum menulis kode animasi.
 ---
 
-# UI Motion Showcase — Studio Production Brain (Remotion 60fps)
+# UI Motion Showcase Director (Remotion 2.5D + Voice-First)
 
-Kamu bertindak sebagai **Creative Director + Senior Motion Engineer**. Tugasmu adalah mengubah kode UI React/Tailwind asli menjadi video **Hybrid Product Launch Film** (gabungan *brand film* editorial + *UI showcase* produk) yang terasa mahal, tajam, dan sinkron secara audio-visual di **Remotion (60 fps)**.
+Kamu adalah **Senior UI/UX Engineer, Design System Architect, dan Motion Director**. Tugasmu mengubah kode proyek aplikasi (React/Tailwind/HTML) menjadi video **UI Motion Showcase 60fps** di Remotion dengan ritme narasi Voice Over, koreografi 2.5D yang tajam, dan sound design yang presisi.
 
-Sebelum menulis satu baris kode animasi pun, WAJIB baca tiga file referensi di folder skill ini:
-1. `references/motion-bible.md` — Aturan *anti-AI slop* dan **9 Core Production Rules** (*brand-agnostic*): *zero dead-air*, *zero-latency cursor*, *theme-locked color rotation*, *action-driven center-first layout*, *mathematical hand-off*, *kinetic headline + reactive glass card*, *safe-area & HUD collision guard*, resep visual, dan pola *Hero Shots* universal.
-2. `references/audio-sfx.md` — Protokol *Audio-Visual Lock*, **Audio Deduplication Lock** (larangan `<Audio />` di dalam loop + cooldown `≥ 10f`), pemetaan `SFX_CUES`, dan skrip generator audio prosedural `.wav`.
-3. `references/remotion-motion-guardrails.md` — Guardrails **v1.2 (Universal 9 Core Production Rules)** & checklist determinisme 60fps Remotion (salin file ini ke `.agents/rules/` saat proyek Remotion baru dibuat).
+**Larangan Keras:**
+- **JANGAN** gunakan 3D berat (Blender, Three.js shader kompleks, atau WebGL). Bangun seluruh kedalaman ruang menggunakan teknik **2.5D CSS/React** (`perspective`, `rotateX/Y` halus, *depth parallax*, *frosted glass*, dan *layered shadows*).
+- **JANGAN** menulis kode komponen animasi atau merender video sebelum menyusun **Storyboard (Beat Sheet) + Naskah VO** dan mendapatkan persetujuan eksplisit dari user.
 
 ---
 
-## Alur Kerja Produksi Wajib (7-Stage Gated Pipeline)
+## Alur Kerja Produksi (Wajib Berurutan)
 
-DILARANG melompat langsung ke penulisan kode video sebelum melewati Gate persetujuan.
+### Tahap 1: Audit Kode & Ekstraksi Design Tokens
+1. Baca kode proyek aplikasi user (CSS/Tailwind config, palet warna, font, border-radius, dan struktur komponen utama).
+2. Tentukan polaritas produk (**Dark-Mode** atau **Light-Mode**) untuk mengunci aturan rotasi warna latar.
+3. Pilih **maksimal 3 komponen/fitur paling visual** yang memiliki perubahan angka, grafik bergerak, atau reaksi berantai saat tombol diklik.
+4. **Sanitasi UI:** Saat membangun ulang komponen untuk Remotion, bersihkan data pribadi, ganti foto profil dengan placeholder netral, dan hapus badge notifikasi yang mengganggu. Elemen yang terkena *macro zoom* wajib dibangun sebagai komponen React/SVG tajam (bukan screenshot pecah).
 
-### Tahap 1: Audit Repo & Ekstraksi Design Tokens
-- Jika pengguna memberikan repo/kode React asli (misal dashboard & landing page SaaS), baca konfigurasi styling (`tailwind.config.*`, `globals.css`, komponen utama).
-- Ekstrak **Design Tokens 100% akurat**: warna background, surface, border 1px, warna aksen utama, tipografi (font family & weight), radius sudut, dan shadow.
-- **ATURAN KERAS (Motion-Ready Extraction):**
-  - DILARANG merender aplikasi live via `<iframe>`, URL GitHub Pages, atau menumpuk screenshot statis.
-  - DILARANG memakai CSS `transition`, CSS `@keyframes`, `:hover`, `setTimeout`, atau `requestAnimationFrame` (menyebabkan *flicker* dan *desync* di Remotion).
-  - Pilih hanya **3–4 Hero Components** paling menjual, lalu bangun ulang versi *motion-ready* di dalam Remotion di mana setiap state dan perubahan dikontrol murni oleh `useCurrentFrame()`, `interpolate()`, dan `spring()`.
+### Tahap 2: Voice-First Script & Storyboard Gate (STOP & TUNGGU ACC)
+Sebelum menyentuh kode Remotion, susun dan tampilkan kepada user:
+1. **Naskah Voice Over (VO) — Siap Copy-Paste ElevenLabs:**
+   - Hitung durasi dengan standar **~2,2 kata per detik** (misal: video 30 detik = maksimal 55–65 kata, sisakan 2 detik terakhir untuk *end card*). Tulis 1 kalimat pendek dan tegas per babak yang memuncak pada nama brand dan CTA.
+   - Sajikan naskah dalam format **siap copy-paste ke ElevenLabs**, dipecah per babak (`Babak 01` hingga `Babak 06`) lengkap dengan tanda baca jeda alami (`—` dan `...`), catatan gaya penyampaian (misal: *upbeat, crisp, confident*), serta rekomendasi pengaturan ElevenLabs (`Model: Eleven Multilingual v2`, `Stability: ~50%`, `Style: ~20%`).
+   - **Larangan Auto-API:** Jangan pernah memanggil API berbayar ElevenLabs secara otomatis. Tunggu user menaruh file hasil generate manual dari web `elevenlabs.io` ke folder `public/audio/` (`vo.mp3` atau `vo-01.mp3` s/d `vo-06.mp3`).
+2. **Tabel Beat Sheet (60 fps):** Bagi total durasi (misal `30 detik = 1800 frame`) ke dalam 5–6 babak yang jumlah akhirnya **pas 100%** dari frame budget:
+   - `01. Hook Intro` (Masalah/nilai utama + Logo reveal)
+   - `02. Bridge / Launcher` (Transisi masuk ke ruang kerja produk)
+   - `03. Fitur 1 (Data / Visualisasi Utama)`
+   - `04. Fitur 2 (Aksi / Sinkronisasi Cepat)`
+   - `05. Fitur 3 (Action-Driven Layout Shift + Reactive Card)`
+   - `06. Kinetic Outro & CTA Lockup`
+   Setiap baris wajib mencantumkan: **Rentang Frame**, **Naskah VO**, **Warna Latar & Gerakan Kamera 2.5D**, **Frame Klik Kursor**, **Kinetic Typography**, dan **Transisi + SFX**.
+3. **Berhenti dan minta persetujuan user.** Jangan mulai coding sebelum user menyetujui storyboard (atau setelah storyboard diperbarui berdasarkan catatan user).
 
-### Tahap 2: Brief, Beat Sheet Storyboard & Strict Frame-Budget Lock (Core Rule #9)
-Susun *Beat Sheet Storyboard* terperinci sebelum coding dengan arsitektur **Hybrid Product Launch Film** (default 30 detik @ 60fps = `1800` frame, atau sesuai durasi brief).
+### Tahap 3: Build di Remotion (Arsitektur Terpusat)
+Setelah storyboard disetujui, baca `references/production-and-audio-rules.md` lalu bangun proyek Remotion dengan struktur berikut:
+1. **Single Source of Truth (`src/config/timeline.ts`):** Simpan seluruh konstanta nomor frame (`BEATS`) dan daftar event audio (`EVENTS`) dalam satu file terpusat agar perubahan timing cukup dilakukan di satu tempat. Jika file audio ElevenLabs sudah dikonfirmasi tersedia di `public/audio/`, langsung ukur durasi asli setiap file secara presisi (`ffprobe` atau `getAudioDurationInSeconds` Remotion) dan kunci konstanta frame di `src/config/timeline.ts` mengikuti panjang aktual rekaman VO tersebut.
+2. **Komponen UI Motion-Ready:** Jangan merender iframe web mentah atau mengandalkan CSS `transition` biasa. Kontrol seluruh pergerakan murni lewat `useCurrentFrame()`, `spring()`, dan `interpolate()`.
+3. **Terapkan 20 Hukum Produksi** dari `references/production-and-audio-rules.md` (Zero Dead-Air, Zero-Latency Cursor, Theme-Locked Color Rotation, Action-Driven Layout Shift, Mathematical Hand-Off, Shape-Morph Transitions, Safe-Area Guard, Zero DOM Reflow, 1:1 Proportion Lock, hingga Vector Text Sharpness Lock).
 
-**ATURAN WAJIB (Strict Frame-Budget Lock — Storyboard-First Rule):**
-Dilarang menulis satu baris kode komponen animasi pun sebelum menyusun dan menyetujui tabel alokasi frame yang jumlah totalnya **pas 100%** dari durasi target, mengunci seluruh 6 parameter wajib (*Rentang Frame, Warna Latar, Gerakan Kamera, Frame Klik Kursor, Teks Kinetic, Timestamp SFX*), serta mematuhi batas *cursor entry* (`15–30f`) dan *post-action hold* (`20–30f`):
+### Tahap 4: Visual Self-Check (Contact Sheet Inspection)
+1. Render beberapa *still frame* kunci menggunakan CLI Remotion (`npx remotion still`) di titik-titik kritis: awal setiap scene, tepat saat transisi berlangsung, puncak klik kursor, dan *end card*.
+2. Periksa hasil gambar untuk memastikan:
+   - Tidak ada teks judul eksternal yang menabrak angka utama UI.
+   - **Zero layout shift:** kemunculan judul atau elemen outro tidak menggeser atau membuat kartu lain berderak (*DOM reflow*).
+   - Tidak ada patahan (*snap*) saat pergantian adegan dan **tidak ada kartu morph yang kosong** di tengah transisi (konten sudah mulai muncul sejak titik tengah `50%`).
+   - Kontras teks terbaca jelas di atas setiap warna latar, dan logo penutup berada tepat di tengah.
+   Perbaiki jika ada temuan sebelum merender video.
 
-| Babak | Rentang Frame (Durasi) | Warna Latar (Theme-Locked) | Gerakan Kamera & Hand-Off | Frame Klik Kursor | Teks Kinetic (3–5 Kata) | Timestamp SFX (`≥ 10f` Cooldown) |
-|---|---|---|---|---|---|---|
-| **Act 1: Brand Hook & Logo** | `0–240` (`240f`) | Deep Neutral / Crisp Off-White | Drift `1.0 → 1.08` (zoom ke CTA/grid) | — | *Hook pembuka tajam* | `f12 whoosh`, `f190 impact_sub` |
-| **Act 2: Motivated Transition** | `240–360` (`120f`) | Architectural / Soft Tinted Grid | Hand-off `1.08` identik → `1.0`, `rotX 6°→0°` | Entry `f258`, klik `f305` | *Transisi ke produk* | `f305 click`, `f315 whoosh` |
-| **Act 3A: Hero Feature 1** | `360–720` (`360f`) | Deep Neutral / Crisp Off-White | Center-first `x:0` → shift kiri, drift `1.0→1.04` | Entry `f380`, klik `f430` | *Judul Fitur 1 (3–5 kata)* | `f430 click`, `f440 pop`, `f452 whoosh_soft` |
-| **Act 3B: Hero Feature 2** | `720–1080` (`360f`) | Architectural / Soft Tinted Grid | Hand-off identik + drift `rotY 1°–2°` | Entry `f740`, klik `f790` | *Judul Fitur 2 (3–5 kata)* | `f790 click`, `f800 pop`, `f812 tick` |
-| **Act 3C: Hero Feature 3** | `1080–1440` (`360f`) | Full-Bleed Brand Accent | Hand-off identik + drift `1.0→1.04` | Entry `f1100`, klik `f1150` | *Judul Fitur 3 (3–5 kata)* | `f1150 click`, `f1160 pop`, `f1172 whoosh_soft` |
-| **Act 4: Kinetic Outro & Lockup** | `1440–1800` (`360f`) | Deep Neutral / Crisp Off-White | Zoom-out + *secondary micro-interaction* (`> 90f`) | Hover CTA `f1620` | *CTA Penutup + Lockup* | `f1445 whoosh`, `f1620 tick`, `f1710 impact_sub` |
+### Tahap 5: 3-Layer Audio Lock, Re-Timing & Mixing
+1. **Voice Over & Presisi Re-Timing (Layer Utama):**
+   - Saat user mengonfirmasi bahwa file audio ElevenLabs sudah tersedia di `public/audio/` (`vo.mp3` atau `vo-01.mp3` s/d `vo-06.mp3`), ukur durasi asli setiap file audio secara presisi menggunakan `ffprobe` atau `getAudioDurationInSeconds` Remotion.
+   - Perbarui konstanta frame di `src/config/timeline.ts` agar durasi setiap adegan mengikuti panjang aktual rekaman VO sebelum merender video final.
+   - Masukkan file audio VO (`volume: 1.0`) lebih dulu dan pastikan ketukan animasi sinkron dengan pengucapan kata kunci.
+2. **Event-Synced SFX (Layer Aksen):** Generate/pasang efek suara (`whoosh`, `click`, `pop`, `soft_hit`) secara terpusat berdasarkan array `EVENTS` (`volume: 0.45–0.65`). Pastikan tidak ada SFX ganda yang bertumpuk.
+3. **Background Music (Layer Ritme):** Pasang trek musik instrumental yang BPM-nya selaras dengan tempo video, dengan volume rendah (`0.12–0.18`) di bawah VO dan SFX.
 
-*(Total wajib **pas 100%** dari durasi target — contoh di atas `240+120+360+360+360+360 = 1800f` — sehingga penambahan detail mikro tidak pernah menggeser atau memotong adegan penutup.)*
-
-### Tahap 3: GATE 1 — User ACC
-- Tampilkan rangkuman Design Tokens yang diekstrak + Tabel Storyboard + daftar komponen yang akan diekstrak.
-- **BERHENTI dan minta persetujuan (ACC) pengguna** (serta konfirmasi rasio aspek: `1920x1080` landscape atau `1080x1920` vertikal) sebelum mulai membangun kode Remotion.
-
-### Tahap 4: Build Modular di Remotion
-Bangun struktur proyek yang rapi:
-- `src/motion/tokens.ts` — Design tokens hasil ekstraksi dari repo React asli + konstanta `FPS = 60`.
-- `src/motion/physics.ts` — Preset kurva easing terkunci, fungsi *flowing spline camera*, dan helper jalur kursor Bezier.
-- `src/motion/handoff.ts` — Konstanta *End-to-Start Transform Lock* antar adegan agar bebas *visual snap*.
-- `src/components/ui/` — Komponen UI *motion-ready* (kartu, grafik SVG, odometer angka, kursor, badge *liquid glass*).
-- `src/components/fx/` — Layer finishing (*film grain 2–3%*, *editorial hairline grid*, *blueprint callout*, *dot-matrix canvas/SVG*, `<CameraMotionBlur>`).
-- `src/scenes/` — Komposisi tiap babak (`Act1Hook.tsx`, `Act2Transition.tsx`, `Act3Features.tsx`, `Act4Outro.tsx`).
-- `src/audio/cues.ts` — Daftar konstanta frame tepat untuk setiap kejadian audio-visual.
-
-### Tahap 5: GATE 2 — Visual Self-Check (Contact Sheet Verification)
-Mengadopsi protokol `render_frames` / *cek still*: **DILARANG merender MP4 final sebelum memverifikasi visual secara langsung.**
-1. Render 6–8 *still frames* kunci menggunakan CLI Remotion (`npx remotion still <CompId> out/check_<frame>.png --frame=<frame>`), mencakup puncak transisi dan momen statis tiap babak.
-2. Gabungkan menjadi satu *contact sheet* berlabel nomor frame menggunakan `ffmpeg` (atau periksa satu per satu jika agen memiliki kapabilitas vision).
-3. Audit ketat:
-   - Apakah ada teks terpotong, bertabrakan, atau terlalu kecil di *safe area*?
-   - Apakah kontras & hierarki visual terbaca dalam < 1 detik?
-   - Apakah sudut kamera dan *crop* fokus ke 1 komponen pahlawan?
-   - **Cek Safe-Area & HUD Collision (`70–90 px` + gap `24–32 px`):** Pastikan tepi atas dan bawah `70–90 px` khusus untuk *HUD metadata* (`FIG. 01`, indikator waktu) dan *Kinetic Headline*, sementara komponen UI utama & *floating card* tetap di *center stage* dengan jarak pemisah minimal `24–32 px` dari teks judul eksternal tanpa menutupi angka, grafik, atau tombol.
-   - **Cek Mathematical Hand-Off (Zero-Snap):** Render 2 frame bersebelahan di batas pergantian adegan (misal `frame 239` & `240`, `frame 359` & `360`) untuk memastikan nilai `scale`, `rotateX`, `rotateY`, dan `translate` **identik 100%** tanpa patahan visual (*snap*).
-   - **Cek Action-Driven Layout Shift & Zero Dead-Air:** Pastikan modul UI mulai tepat di tengah (`x: 0`), baru bergeser ke kiri saat diklik bersamaan dengan *pop-out* kartu kanan tanpa overlap; serta pastikan tidak ada layar beku `> 30f` (atau wajib ada *secondary micro-interaction* jika adegan bertahan `> 90f`).
-4. Perbaiki bug visual terlebih dahulu sebelum masuk ke Tahap 6.
-
-### Tahap 6: Audio-Visual Lock (Procedural SFX + Music Bed)
-- Jalankan skrip generator SFX prosedural (lihat `references/audio-sfx.md` untuk generator murni Node.js, atau gunakan `sfx.py` dari Motion-By-Labs jika tersedia di workspace) untuk men-generate file `.wav` ke `public/sfx/`.
-- **Audio Deduplication Lock:** Pasang setiap SFX secara terpusat di level *master timeline* berdasarkan `src/audio/cues.ts` dengan `<Sequence from={cue.frame}><Audio src={staticFile(cue.file)} volume={cue.volume} /></Sequence>` (jarak minimal `10` frame antar-SFX sejenis). Dilarang keras menaruh `<Audio />` di dalam `.map()` / komponen anak yang di-render berulang.
-- Siapkan slot `<Audio>` untuk 1 trek *background music bed* penuh (`0` hingga akhir) dengan *ducking* halus dan *fade-out* di 30 frame terakhir agar transisi terasa menyatu.
-
-### Tahap 7: Final Render & Delivery
-- Render video final 60 fps kualitas tinggi (`npx remotion render <CompId> out/showcase-final.mp4 --codec=h264 --crf=16 --pixel-format=yuv420p`).
-- Laporkan lokasi file, durasi, daftar `SFX_CUES`, serta instruksi cara membuka **Remotion Studio** (`npx remotion studio`) agar pengguna bisa melakukan *fine-tuning* 10% terakhir secara visual.
+### Tahap 6: Final Render & Revisi Terversi
+1. Render video final pada **60 fps** dengan **supersampling resolusi tinggi** agar teks kecil UI tetap tajam di layar HiDPI:
+   - **4K (`3840x2160`):** `npx remotion render ... --fps=60 --scale=2 --crf=15 --pixel-format=yuv420p`
+   - **2K (`2880x1620`):** `npx remotion render ... --fps=60 --scale=1.5 --crf=15 --pixel-format=yuv420p`
+2. Jika user memberikan catatan revisi, simpan versi baru tanpa menimpa file master sebelumnya, terapkan revisi secara presisi, dan laporkan bagian mana saja yang diubah.
